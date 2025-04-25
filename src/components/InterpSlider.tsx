@@ -10,7 +10,7 @@ export const InterpSlider: React.FC<InterpSliderProps> = ({ value, onChange }) =
   <div className="w-full max-w-xl py-4">
     <SliderPrimitive.Root
       min={-2}
-      max={2}
+      max={3}
       step={0.1}
       value={[value]}
       onValueChange={(v) => onChange(v[0])}
