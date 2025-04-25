@@ -47,8 +47,8 @@ function normalizeData(
 export default function App() {
   const [dataA, setDataA] = useState<Record<string, number> | null>(null);
   const [dataB, setDataB] = useState<Record<string, number> | null>(null);
-  const [t, setT] = useState(0);              // 補完係数 [-5,5]
-  const [normalized, setNormalized] = useState(false); // 正規化トグル
+  const [t, setT] = useState(0);
+  const [normalized, setNormalized] = useState(true); // 正規化トグル
 
   /* 正規化処理（トグル依存） */
   const dataANorm = useMemo(
