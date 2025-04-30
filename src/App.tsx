@@ -12,13 +12,13 @@ import { extractShaps, normalizeData, interpolate, toChart } from './utils/shap-
 export default function App() {
   const [shapListA, setShapListA] = useState<ShapEntry[] | null>(null);
   const [shapListB, setShapListB] = useState<ShapEntry[] | null>(null);
-  const [selectedIdA, setSelectedIdA] = useState<number | 'global'>('global');
-  const [selectedIdB, setSelectedIdB] = useState<number | 'global'>('global');
-  const [t, setT] = useState(0);
+  const [selectedId, setSelectedId] = useState<number | 'global'>('global');
+  const [useAbs, setUseAbs] = useState(true);
   const [normalized, setNormalized] = useState(true);
+  const [t, setT] = useState(0);
 
-  const rawA = extractShaps(shapListA, selectedIdA);
-  const rawB = extractShaps(shapListB, selectedIdB);
+  const rawA = extractShaps(shapListA, selectedId, useAbs);
+  const rawB = extractShaps(shapListB, selectedId, useAbs);
 
   const dataANorm = useMemo(() => normalized ? normalizeData(rawA) : rawA, [rawA, normalized]);
   const dataBNorm = useMemo(() => normalized ? normalizeData(rawB) : rawB, [rawB, normalized]);
@@ -37,23 +37,28 @@ export default function App() {
           <FileInput label="SHAP JSON – B" onLoad={(d) => setShapListB(d as ShapEntry[])} />
         </section>
 
-        {/* セレクトボックス */}
-        <section className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2">
-          <ShapSelector label="Instance A" ids={shapListA?.map(d => d.id) ?? []} selectedId={selectedIdA} setSelectedId={setSelectedIdA} />
-          <ShapSelector label="Instance B" ids={shapListB?.map(d => d.id) ?? []} selectedId={selectedIdB} setSelectedId={setSelectedIdB} />
+        {/* コントロール UI */}
+        <section className="flex flex-wrap items-center gap-6">
+          <ShapSelector
+            ids={shapListA?.map(d => d.id) ?? []}
+            selectedId={selectedId}
+            setSelectedId={setSelectedId}
+          />
+
+          <div className="flex items-center gap-2">
+            <Switch id="abs" checked={useAbs} onCheckedChange={setUseAbs} />
+            <Label htmlFor="abs">Use absolute value</Label>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <Switch id="norm" checked={normalized} onCheckedChange={setNormalized} />
+            <Label htmlFor="norm">Normalize</Label>
+          </div>
         </section>
 
         {dataANorm && dataBNorm && (
           <>
-            <div className="flex w-full max-w-xl items-center justify-between gap-4">
-              <InterpSlider value={t} onChange={setT} />
-              <Label className="flex items-center gap-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
-                <span>Normalize</span>
-                <Switch checked={normalized} onCheckedChange={setNormalized} className={clsx('flex h-5 w-10 items-center rounded-full bg-neutral-300 p-0.5', 'data-[state=checked]:bg-blue-500', 'dark:bg-neutral-700 dark:data-[state=checked]:bg-blue-500')}>
-                  <span className={clsx('h-4 w-4 transform rounded-full bg-white transition-transform', 'data-[state=checked]:translate-x-5')} />
-                </Switch>
-              </Label>
-            </div>
+            <InterpSlider value={t} onChange={setT} />
 
             {/* 補完後チャート */}
             <div className="w-full">

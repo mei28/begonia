@@ -8,15 +8,14 @@ import {
 import { Label } from "@/components/ui/label";
 
 interface ShapSelectorProps {
-  label: string;
   ids: number[];
   selectedId: number | 'global';
   setSelectedId: (id: number | 'global') => void;
 }
 
-export const ShapSelector: React.FC<ShapSelectorProps> = ({ label, ids, selectedId, setSelectedId }) => (
+export const ShapSelector: React.FC<ShapSelectorProps> = ({ ids, selectedId, setSelectedId }) => (
   <div className="flex flex-col gap-1">
-    <Label>{label}</Label>
+    <Label>Instance ID</Label>
     <Select
       value={String(selectedId)}
       onValueChange={(val) => setSelectedId(val === 'global' ? 'global' : parseInt(val))}

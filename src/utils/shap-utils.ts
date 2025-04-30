@@ -2,9 +2,12 @@ import { ShapEntry } from "@/types/shap";
 
 export function extractShaps(
   shapList: ShapEntry[] | null,
-  selectedId: number | 'global'
+  selectedId: number | 'global',
+  useAbs: boolean = false
 ): Record<string, number> | null {
   if (!shapList) return null;
+  const apply = (val: number) => useAbs ? Math.abs(val) : val;
+
   if (selectedId === 'global') {
     const acc: Record<string, number> = {};
     shapList.forEach((entry) => {
@@ -13,11 +16,16 @@ export function extractShaps(
       }
     });
     const avg: Record<string, number> = {};
-    for (const key in acc) avg[key] = acc[key] / shapList.length;
+    for (const key in acc) avg[key] = apply(acc[key] / shapList.length);
     return avg;
   }
   const match = shapList.find((d) => d.id === selectedId);
-  return match?.shaps ?? null;
+  if (!match) return null;
+  const result: Record<string, number> = {};
+  for (const [k, v] of Object.entries(match.shaps)) {
+    result[k] = apply(v);
+  }
+  return result;
 }
 
 export function normalizeData(data: Record<string, number> | null): Record<string, number> | null {
